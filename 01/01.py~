@@ -1,6 +1,0 @@
-# -*- coding: utf-8 -*-
-
-str = "パタトクカシーー"
-
-print(str[0::2])
-print(str[2::2])

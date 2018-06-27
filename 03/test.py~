@@ -1,7 +1,0 @@
-import re
-
-str = 'abcabcdef'
-matches = re.findall(ur'(abc)+', str)
-
-for match in matches:
-    print(match)
