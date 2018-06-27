@@ -1,5 +1,0 @@
-#!/usr/sh
-
-NUM=`wc -l $1`
-NUM=`expr $NUM / $1`
-split -l NUM $2
