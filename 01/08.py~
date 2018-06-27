@@ -1,0 +1,12 @@
+import re
+
+def cipher(str):
+    ret = ""
+    for char in str:
+        if re.match("[a-z]", char):
+            ret = ret + chr(219 - ord(char))
+        else:
+            ret = ret + char
+    return ret
+
+print(cipher("I am a student"))

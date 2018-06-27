@@ -1,0 +1,4 @@
+def time_str_temp(x, y, z):
+    return "%d時の%sは%f" % (x, y, z)
+
+time_str_temp(12, u"気温", 22.4)

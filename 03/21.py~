@@ -1,0 +1,7 @@
+import england
+import re
+
+text = england.read_json_of_england()
+pCategory = re.findall(r"[[category:.*]]\n", text)
+
+print(pCategory)

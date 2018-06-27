@@ -1,0 +1,5 @@
+#!/usr/sh
+
+if [ $# -ge 1 ]; then
+    cut 1 -d '\t' $1
+fi

@@ -1,0 +1,8 @@
+def n_gram(n, seq):
+    ngram = []
+    for i in range(len(seq) - n):
+        ngram.append(seq[i:i + n])
+    return ngram
+
+str = "I am NLPer."
+print(n_gram(2, str))

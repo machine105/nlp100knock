@@ -1,0 +1,7 @@
+import "05.py"
+
+str1 = "paraparaparadise"
+str2 = "paragraph"
+
+X = n_gram(2, str1)
+Y = n_gram(2, str2)

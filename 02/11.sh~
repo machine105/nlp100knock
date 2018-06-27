@@ -1,0 +1,5 @@
+#!/usr/sh
+
+if [ $# -ge 1 ]; then
+    sed 's/¥t/¥x20/g' $1
+fi
