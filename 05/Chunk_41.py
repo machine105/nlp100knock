@@ -37,7 +37,18 @@ class Chunk:
             if morph.pos == u'名詞':
                 return True
         return False
-            
+
+    def first_verb(self):
+        for morph in self.morphs:
+            if morph.pos == u'動詞':
+                return morph.base
+        return None
+
+    def case(self):
+        for morph in reversed(self.morphs):
+            if morph.pos == u'助詞':
+                return morph.base
+        return None
 
 def read_cabocha(filename):
     ret = [] # list of sentences
