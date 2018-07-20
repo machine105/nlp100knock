@@ -11,14 +11,17 @@ class Chunk:
 
     def __repr__(self):
         ret = u''
-        ret = ret + u'->' + str(self.dst) + u'\n<-'
         for src in self.srcs: 
             ret = ret  + str(src) + u','
-        ret = ret + u'\n'
+        ret = ret + u' -> '
         for morph in self.morphs:
             ret = ret + morph.surface
-        ret = ret + u'\n'
+        ret = ret + u' -> '
+        ret = ret + str(self.dst) + '\n'
         return ret.encode('utf-8')
+
+    def __str__(self):
+        return self.__repr__()
 
     def surface(self):
         ret = u''
@@ -50,6 +53,17 @@ class Chunk:
                 return morph.base
         return None
 
+    def noun(self):
+        for morph in self.morphs:
+            if morph.pos == u'名詞':
+                return morph.base
+        return None
+
+    def clean(self):
+        for morph in self.morphs:
+            if morph.pos == u'記号':
+                self.morphs.remove(morph)
+
 def read_cabocha(filename):
     ret = [] # list of sentences
     fin = codecs.open(filename, 'r', 'utf-8')
@@ -58,65 +72,44 @@ def read_cabocha(filename):
 
     sentence = [] # list of Chunk
     chunk = None
+    # dst-src map
     dst = {}
     for line in cont:
+        # head of chunk
         chunk_mark = re.match(ur'\* ([0-9]+) (-?[0-9]+)D .*', line)
         if chunk_mark:
             if chunk:
+                # append previous chunk
                 sentence.append(chunk)
             if chunk_mark.group(1) in dst:
+                # if reading chunk is source of some other chunk
                 chunk = Chunk([], int(chunk_mark.group(2)), dst[chunk_mark.group(1)])
             else:
+                # if current chunk is source of no other chunk
                 chunk = Chunk([], int(chunk_mark.group(2)))
+            # add current chunk's destination to dst-src map
             if chunk_mark.group(2) in dst:
                 dst[chunk_mark.group(2)].append(int(chunk_mark.group(1)))
             else:
                 dst[chunk_mark.group(2)] = [int(chunk_mark.group(1))]
+        # morph finded
         morph_mark = re.match(ur'(.+)\t(.+),(.+),.+,.+,.+,.+,(.+),.+,.+', line)
         if morph_mark:
-            # exclude 記号
-            if morph_mark.group(2) != u'記号':
-                chunk.morphs.append(Morph(morph_mark.group(1), morph_mark.group(4), morph_mark.group(2), morph_mark.group(3)))
+            chunk.morphs.append(Morph(morph_mark.group(1), morph_mark.group(4), morph_mark.group(2), morph_mark.group(3)))
+        # end of sentence
         if line == 'EOS':
+            # add last chunk of the sentence
             if chunk:
-                if chunk.morphs:
-                    sentence.append(chunk)
+                sentence.append(chunk)
+            # add sentence(list) to return value
             if sentence:
                 ret.append(sentence)
+            # initialize temporary valuables
             chunk = None
             sentence = []
             dst = {}
+    for sent in ret:
+        for chunk in sent:
+            chunk.clean()
     return ret
 
-def parse_cabocha(cont):
-    sentence = [] # list of Chunk
-    chunk = None
-    dst = {}
-    for line in cont:
-        chunk_mark = re.match(ur'\* ([0-9]+) (-?[0-9]+)D .*', line)
-        if chunk_mark:
-            if chunk:
-                sentence.append(chunk)
-            if chunk_mark.group(1) in dst:
-                chunk = Chunk([], int(chunk_mark.group(2)), dst[chunk_mark.group(1)])
-            else:
-                chunk = Chunk([], int(chunk_mark.group(2)))
-            if chunk_mark.group(2) in dst:
-                dst[chunk_mark.group(2)].append(int(chunk_mark.group(1)))
-            else:
-                dst[chunk_mark.group(2)] = [int(chunk_mark.group(1))]
-        morph_mark = re.match(ur'(.+)\t(.+),(.+),.+,.+,.+,.+,(.+),.+,.+', line)
-        if morph_mark:
-            # exclude 記号
-            if morph_mark.group(2) != u'記号':
-                chunk.morphs.append(Morph(morph_mark.group(1), morph_mark.group(4), morph_mark.group(2), morph_mark.group(3)))
-        if line == 'EOS':
-            if chunk:
-                if chunk.morphs:
-                    sentence.append(chunk)
-            if sentence:
-                ret.append(sentence)
-            chunk = None
-            sentence = []
-            dst = {}
-    return ret

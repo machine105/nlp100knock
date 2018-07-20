@@ -17,6 +17,6 @@ def extract_verb_frames():
                         cases.append(case)
                         surfaces.append(sentence[src].surface())
                 if cases:
-                    line = line + u' '.join(sorted(cases)) + '\t' + u' '.join(sorted(surfaces))
+                    line = line + u' '.join(sorted(cases)) + '\t' + u' '.join(sorted(surfaces, key = lambda surface: surface[-1]))
                     fout.write(line + '\n')
     fout.close()

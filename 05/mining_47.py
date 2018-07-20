@@ -6,32 +6,24 @@ def verb_mining():
     text = read_cabocha('neko.txt.cabocha')
     fout = codecs.open('mining.txt', 'w', 'utf-8')
     for sentence in text:
-        for chunk in sentence:
-            verb = chunk.first_verb()
-            if verb:
-                is_sahen = False
-                is_wo = False
-                sahen = None
-                for src in chunk.srcs:
-                    is_sahen = False
-                    is_wo = False
-                    sahen = None
-                    for morph in sentence[src].morphs:
-                        if morph.pos1 == u'サ変接続':
-                            is_sahen = True
-                            sahen = src
-                        if morph.surface == u'を':
-                            is_wo = True
-                if is_sahen and is_wo:
-                    line = sentence[src].surface() + verb + '\t'
-                    cases = []
-                    surfaces = []
-                    for src in chunk.srcs:
-                        case = sentence[src].case()
-                        if case:
-                            cases.append(case)
-                            surfaces.append(sentence[src].surface())
-                    if cases:
-                        line = line + u' '.join(sorted(cases)) + '\t' + u' '.join(sorted(surfaces))
-                        fout.write(line + '\n')
+        # if を is in chunk, wo_pos represents the index of the char
+        for wo_pos, chunk in enumerate(sentence):
+            for morph in chunk.morphs:
+                if morph.pos1 == u'サ変接続' and chunk.case() == u'を':
+                    verb = sentence[chunk.dst].first_verb()
+                    if verb:
+                        # sentence[chunk.dst] must has verb
+                        line = chunk.surface() + verb + u'\t'
+                        cases = []
+                        surfaces = []
+                        for src in (chunk.srcs + sentence[chunk.dst].srcs):
+                            if src == wo_pos:
+                                continue
+                            case = sentence[src].case()
+                            if case:
+                                cases.append(case)
+                                surfaces.append(sentence[src].surface())
+                        if cases:
+                            line = line + u' '.join(sorted(cases)) + u'\t' + u' '.join(sorted(surfaces , key = lambda surface: surface[-1]))
+                            fout.write(line + u'\n')
     fout.close()

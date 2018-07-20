@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from Chunk_41 import Chunk
-from Chunk_41 import read_cabocha, parse_cabocha
+from Chunk_41 import read_cabocha
 import pydot
 from subprocess import Popen, PIPE
 import codecs
@@ -26,7 +26,8 @@ def visualize_from_text(text, name):
     p = Popen("cabocha -f1 < " + name + ".txt > " + name + ".txt.cabocha", shell=True)
     p.wait()
     sentences = read_cabocha(name + '.txt.cabocha')
-    Popen("rm " + name + ".*", shell=True)
+    Popen("rm " + name + ".txt", shell=True)
+    Popen("rm " + name + ".txt.cabocha", shell=True)
     g = pydot.Dot()
     for sentence in sentences:
         for chunk in sentence:

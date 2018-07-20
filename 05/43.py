@@ -3,6 +3,7 @@ from Chunk_41 import Chunk
 from Chunk_41 import read_cabocha
 import codecs
 
+# noun -> verb
 def relations_nv():
     fout = codecs.open('out43.txt', 'w', 'utf-8')
     text = read_cabocha('neko.txt.cabocha')
